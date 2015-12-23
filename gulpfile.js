@@ -17,7 +17,7 @@ gulp.task('compile:clean', function () {
 });
 
 gulp.task('compile:typescript', ['compile:clean'], function() {
-    var tsResult = gulp.src('lib/**/*.ts')
+    var tsResult = gulp.src(['**/*.ts', '!./node_modules/**/*.ts', '!typings/**/*.ts', '!dist/**/*.ts'].concat(['typings/**/*.ts']))
         .pipe($.sourcemaps.init())
         .pipe($.typescript(ts));
     return merge([
@@ -26,5 +26,10 @@ gulp.task('compile:typescript', ['compile:clean'], function() {
     ]);
 });
 
+gulp.task('test:node', ['compile:typescript'], function () {
+    return gulp.src('dist/tests/*.js').pipe($.jasmine());
+});
+
 gulp.task('compile', ['compile:typescript']);
-gulp.task('default', ['compile']);
+gulp.task('test', ['test:node']);
+gulp.task('default', ['test']);

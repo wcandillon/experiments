@@ -19,7 +19,9 @@ export default class Range implements Observable {
                 if(from !== undefined && to !== undefined) {
                     this.range(observer, from, to);
                 }
-            }
+            },
+            return: () => {},
+            throw: () => {}
         });
         this.to.subscribe({
             next: (t) => {
@@ -27,7 +29,9 @@ export default class Range implements Observable {
                 if(from !== undefined && to !== undefined) {
                     this.range(observer, from, to);
                 }
-            }
+            },
+            return: () => {},
+            throw: () => {}
         });
     }
 
@@ -35,5 +39,6 @@ export default class Range implements Observable {
         for(let i = from; i <= to; i++) {
             observer.next(i);
         }
+        observer.return();
     }
 }

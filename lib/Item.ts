@@ -11,5 +11,6 @@ export default class Item implements Observable {
 
     subscribe(observer: Observer): void {
         observer.next(this.item);
+        observer.return();
     }
 }

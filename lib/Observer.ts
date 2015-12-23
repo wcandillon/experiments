@@ -1,5 +1,5 @@
 export interface Observer {
     next(value: any);
-    throw?(errorValue: Error);
-    return?(returnValue: any);
+    throw(errorValue: Error);
+    return();
 };
