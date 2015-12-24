@@ -65,8 +65,8 @@ describe("Basic Tests", () => {
             throw: error => { throw error; }
         });
     });
-/*
-    it("add(5, 5)", done => {
+
+    it("range(1, add(5, 5)) 2", done => {
         let add = (left, right) => [left + right];
         let range = (from, to) => {
             let result = [];
@@ -88,7 +88,6 @@ describe("Basic Tests", () => {
             throw: error => { throw error; }
         });
     });
-    */
 });
 
 
