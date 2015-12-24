@@ -15,7 +15,7 @@ export default class Add implements Observable {
         let left, right;
         this.left.subscribe({
             next: (l) => {
-                left = l[0];
+                left = l;
                 if(left !== undefined && right !== undefined) {
                     observer.next(left + right);
                     observer.return();
@@ -26,7 +26,7 @@ export default class Add implements Observable {
         });
         this.right.subscribe({
             next: (r) => {
-                right = r[0];
+                right = r;
                 if(left !== undefined && right !== undefined) {
                     observer.next(left + right);
                     observer.return();
