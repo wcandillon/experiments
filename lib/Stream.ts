@@ -12,7 +12,7 @@ export default class Stream<T> {
 
     forEach(cb): Stream<T> {
         let pipe = new Pipe<T>();
-        this.input.subscribe({
+        let sub = this.input.subscribe({
             next: (item) => {
                 cb(item);
                 pipe.next(item);
@@ -20,18 +20,37 @@ export default class Stream<T> {
             throw: error => pipe.throw(error),
             return: () => pipe.return()
         });
+        pipe.setSubscription(sub);
         return new Stream<T>(pipe);
     }
 
     map(cb): Stream<T> {
         let pipe = new Pipe<T>();
-        this.input.subscribe({
+        let sub = this.input.subscribe({
             next: (item) => {
                 pipe.next(cb(item));
             },
             throw: error => pipe.throw(error),
             return: () => pipe.return()
         });
+        pipe.setSubscription(sub);
+        return new Stream<T>(pipe);
+    }
+
+    skip(n: number): Stream<T> {
+        let i = 0;
+        let pipe = new Pipe<T>();
+        let sub = this.input.subscribe({
+            next: item => {
+                i++;
+                if(i > n) {
+                    pipe.next(item);
+                }
+            },
+            throw: error => pipe.throw(error),
+            return: () => pipe.return()
+        });
+        pipe.setSubscription(sub);
         return new Stream<T>(pipe);
     }
 
@@ -50,12 +69,13 @@ export default class Stream<T> {
             throw: error => pipe.throw(error),
             return: () => pipe.return()
         });
+        pipe.setSubscription(sub);
         return new Stream<T>(pipe);
     }
 
     filter(cb): Stream<T> {
         let pipe = new Pipe<T>();
-        this.input.subscribe({
+        let sub = this.input.subscribe({
             next: item => {
                 if(cb(item) === true) {
                     pipe.next(item);
@@ -64,6 +84,7 @@ export default class Stream<T> {
             throw: error => pipe.throw(error),
             return: () => pipe.return()
         });
+        pipe.setSubscription(sub);
         return new Stream<T>(pipe);
     }
 

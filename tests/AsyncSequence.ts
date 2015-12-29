@@ -135,14 +135,14 @@ describe("Basic Tests", () => {
         let it = new Stream<number>(new AsyncSequence(allTheIntegers));
         let items = [];
         it
-            .take(5)
-            .filter(item => item > 2)
+            .filter(item => item > 4)
             .map(item => item * item)
             .filter(item => item > 24)
-            .take(1)
+            .take(2)
+            .skip(1)
             .forEach(item => items.push(item))
             .return(() => {
-                expect(items).toEqual([25]);
+                expect(items).toEqual([36]);
                 done();
             });
     });
