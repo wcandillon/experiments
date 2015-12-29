@@ -32,7 +32,6 @@ describe("Basic Tests", () => {
         });
     });
 
-
     it("take(5)", done => {
         let delayPromise = function(ms, value) {
             return new Promise(resolve => setTimeout(() => resolve(value), ms));
@@ -49,6 +48,28 @@ describe("Basic Tests", () => {
             items.push(item);
         }).return(() => {
             expect(items).toEqual([1, 2, 3, 4, 5]);
+            done();
+        });
+    });
+
+    it("filter(i > 2)", done => {
+        let delayPromise = function(ms, value) {
+            return new Promise(resolve => setTimeout(() => resolve(value), ms));
+        };
+        let allTheIntegers = function*() {
+            let i = 0;
+            while(true) {
+                yield delayPromise(25, ++i);
+            }
+        };
+        let it = new Stream<number>(new AsyncSequence(allTheIntegers));
+        let items = [];
+        it.take(5).filter(item => {
+            return item > 2;
+        }).forEach(item => {
+            items.push(item);
+        }).return(() => {
+            expect(items).toEqual([3, 4, 5]);
             done();
         });
     });

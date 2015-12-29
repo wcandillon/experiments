@@ -27,11 +27,25 @@ export default class Stream<T> {
         let i = 0;
         let pipe = new Pipe<T>();
         let sub = this.input.subscribe({
-            next: (item) => {
+            next: item => {
                 i++;
                 if(i > n) {
                     sub.unsubscribe();
                 } else {
+                    pipe.next(item);
+                }
+            },
+            throw: error => pipe.throw(error),
+            return: () => pipe.return()
+        });
+        return new Stream<T>(pipe);
+    }
+
+    filter(cb): Stream<T> {
+        let pipe = new Pipe<T>();
+        this.input.subscribe({
+            next: item => {
+                if(cb(item) === true) {
                     pipe.next(item);
                 }
             },
