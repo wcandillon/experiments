@@ -52,6 +52,30 @@ describe("Basic Tests", () => {
         });
     });
 
+
+    it("take(5, 2)", done => {
+        let delayPromise = function(ms, value) {
+            return new Promise(resolve => setTimeout(() => resolve(value), ms));
+        };
+        let allTheIntegers = function*() {
+            let i = 0;
+            while(true) {
+                yield delayPromise(25, ++i);
+            }
+        };
+        let it = new Stream<number>(new AsyncSequence(allTheIntegers));
+        let items = [];
+        it
+        .take(5)
+        .map(item => item * item)
+        .take(2)
+        .forEach(item => items.push(item))
+        .return(() => {
+            expect(items).toEqual([1, 4]);
+            done();
+        });
+    });
+
     it("filter(i > 2)", done => {
         let delayPromise = function(ms, value) {
             return new Promise(resolve => setTimeout(() => resolve(value), ms));
@@ -89,16 +113,37 @@ describe("Basic Tests", () => {
         it
         .take(5)
         .filter(item => item > 2)
-        .map(item => {
-            return item * item;
-        })
-        .filter(item => item > 20)
-        .forEach(item => {
-            items.push(item);
-        })
+        .map(item => item * item)
+        .filter(item => item > 24)
+        .forEach(item => items.push(item))
         .return(() => {
             expect(items).toEqual([25]);
             done();
         });
+    });
+
+    it("map(i * i)", done => {
+        let delayPromise = function(ms, value) {
+            return new Promise(resolve => setTimeout(() => resolve(value), ms));
+        };
+        let allTheIntegers = function*() {
+            let i = 0;
+            while(true) {
+                yield delayPromise(25, ++i);
+            }
+        };
+        let it = new Stream<number>(new AsyncSequence(allTheIntegers));
+        let items = [];
+        it
+            .take(5)
+            .filter(item => item > 2)
+            .map(item => item * item)
+            .filter(item => item > 24)
+            .take(1)
+            .forEach(item => items.push(item))
+            .return(() => {
+                expect(items).toEqual([25]);
+                done();
+            });
     });
 });
