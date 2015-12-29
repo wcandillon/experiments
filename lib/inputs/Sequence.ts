@@ -25,4 +25,10 @@ export default class Sequence<T> implements Observable<T> {
         this.pull(observer, sub);
         return sub;
     }
+
+    static from(input: any[]): Sequence<any> {
+        return new Sequence<any>(function *(){
+            yield *input;
+        });
+    }
 }

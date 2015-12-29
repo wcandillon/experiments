@@ -101,4 +101,47 @@ export default class Stream<T> {
         });
         return this;
     }
+
+    static combine(fn, fnArgs: Stream<any>[]): Stream<any> {
+        let done = 0;
+        let pipe = new Pipe<any>();
+        let args = [];
+        let argsAreReady = args => {
+            let ready = true;
+            args.forEach(arg => {
+                if(arg[0] === undefined) {
+                    ready = false;
+                }
+            });
+            return ready;
+        };
+        let getArgs = args => {
+            let result = [];
+            args.forEach(arg => {
+                result.push(arg.splice(0, 1)[0]);
+            });
+            return result;
+        };
+        for(let i=0; i < fnArgs.length; i++) {
+            args.push([]);
+            fnArgs[i]
+            .forEach(item => {
+                args[i].push(item);
+                if(argsAreReady(args)) {
+                    pipe.next(fn.apply(fn, getArgs(args)));
+                }
+            })
+            .subscribe({
+                next: item => {},
+                throw: error => pipe.throw(error),
+                return: () => {
+                    done++;
+                    if(done === fnArgs.length) {
+                        pipe.return();
+                    }
+                }
+            });
+        }
+        return new Stream(pipe);
+    }
 }
