@@ -88,17 +88,16 @@ describe("Basic Tests", () => {
         let items = [];
         it
         .take(5)
-        .filter(item => {
-            return item > 2;
-        })
+        .filter(item => item > 2)
         .map(item => {
             return item * item;
         })
+        .filter(item => item > 20)
         .forEach(item => {
             items.push(item);
         })
         .return(() => {
-            expect(items).toEqual([9, 16, 25]);
+            expect(items).toEqual([25]);
             done();
         });
     });
