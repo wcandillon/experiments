@@ -3,10 +3,10 @@ import Seq from "../lib/inputs/AsyncSequence";
 import Sequence from "../lib/inputs/Sequence";
 import Stream from "../lib/Stream";
 
-describe("Basic Tests", () => {
-/*
-    it("async seq", done => {
-        let it = new Stream<number>(Sequence.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
+describe("Sequence Tests", () => {
+
+    it("basic", done => {
+        let it = new Stream<number>(Sequence.from([1, 2, 3, 4, 5]));
         let items = [];
         it.subscribe({
             next: item => {
@@ -23,7 +23,7 @@ describe("Basic Tests", () => {
             }
         });
     });
-
+    /*
     it("take(5)", done => {
         let it = new Stream<number>(Sequence.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
         let items = [];
