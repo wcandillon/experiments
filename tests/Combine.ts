@@ -6,16 +6,17 @@ import Stream from "../lib/Stream";
 
 describe("Basic Tests", () => {
 
+    let delayPromise = function(ms, value) {
+        return new Promise(resolve => setTimeout(() => resolve(value), ms));
+    };
+    let allTheIntegers = function*() {
+        let i = 0;
+        while(true) {
+            yield delayPromise(25, ++i);
+        }
+    };
+
     it("combine 1", done => {
-        let delayPromise = function(ms, value) {
-            return new Promise(resolve => setTimeout(() => resolve(value), ms));
-        };
-        let allTheIntegers = function*() {
-            let i = 0;
-            while(true) {
-                yield delayPromise(25, ++i);
-            }
-        };
         let results = [];
         let left = new Stream<number>(new AsyncSequence(allTheIntegers)).take(5);
         let right = new Stream<number>(new AsyncSequence(allTheIntegers)).take(5);
@@ -30,15 +31,6 @@ describe("Basic Tests", () => {
     });
 
     it("combine 2", done => {
-        let delayPromise = function(ms, value) {
-            return new Promise(resolve => setTimeout(() => resolve(value), ms));
-        };
-        let allTheIntegers = function*() {
-            let i = 0;
-            while(true) {
-                yield delayPromise(25, ++i);
-            }
-        };
         let results = [];
         let left = new Stream<number>(new AsyncSequence(allTheIntegers));
         let right = new Stream<number>(new AsyncSequence(allTheIntegers));
@@ -52,6 +44,7 @@ describe("Basic Tests", () => {
                 done();
             });
     });
+
 /*
     it("combine 2", done => {
         let results = [];

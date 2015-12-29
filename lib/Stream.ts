@@ -62,10 +62,12 @@ export default class Stream<T> {
         let sub = this.input.subscribe({
             next: item => {
                 i++;
-                if(i > n) {
-                    sub.unsubscribe();
-                } else {
+                if(i <= n) {
                     pipe.next(item);
+                }
+                if(i === n) {
+                    sub.unsubscribe();
+                    pipe.return();
                 }
             },
             throw: error => pipe.throw(error),
