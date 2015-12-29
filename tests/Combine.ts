@@ -28,6 +28,30 @@ describe("Basic Tests", () => {
                 done();
             });
     });
+
+    it("combine 2", done => {
+        let delayPromise = function(ms, value) {
+            return new Promise(resolve => setTimeout(() => resolve(value), ms));
+        };
+        let allTheIntegers = function*() {
+            let i = 0;
+            while(true) {
+                yield delayPromise(25, ++i);
+            }
+        };
+        let results = [];
+        let left = new Stream<number>(new AsyncSequence(allTheIntegers));
+        let right = new Stream<number>(new AsyncSequence(allTheIntegers));
+        let add = (left, right) => left + right;
+        Stream
+            .combine(add, [left, right])
+            .forEach(result => results.push(result))
+            .take(5)
+            .return(() => {
+                expect(results).toEqual([2, 4, 6, 8, 10]);
+                done();
+            });
+    });
 /*
     it("combine 2", done => {
         let results = [];

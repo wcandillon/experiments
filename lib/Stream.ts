@@ -1,6 +1,8 @@
 import {Observable} from "./Observable";
 import Pipe from "./inputs/Pipe";
 import {Observer} from "./Observer";
+import Subscription from "./Subscription";
+import MultiplexerSubscription from "./MultiplexerSubscription";
 
 export default class Stream<T> {
 
@@ -88,9 +90,8 @@ export default class Stream<T> {
         return new Stream<T>(pipe);
     }
 
-    subscribe(observer: Observer<T>): Stream<T> {
-        this.input.subscribe(observer);
-        return this;
+    subscribe(observer: Observer<T>): Subscription {
+        return this.input.subscribe(observer);
     }
 
     return(cb): Stream<T> {
@@ -106,6 +107,7 @@ export default class Stream<T> {
         let done = 0;
         let pipe = new Pipe<any>();
         let args = [];
+        let subs = [];
         let argsAreReady = args => {
             let ready = true;
             args.forEach(arg => {
@@ -124,7 +126,7 @@ export default class Stream<T> {
         };
         for(let i=0; i < fnArgs.length; i++) {
             args.push([]);
-            fnArgs[i]
+            let sub = fnArgs[i]
             .forEach(item => {
                 args[i].push(item);
                 if(argsAreReady(args)) {
@@ -141,7 +143,9 @@ export default class Stream<T> {
                     }
                 }
             });
+            subs.push(sub);
         }
+        pipe.setSubscription(new MultiplexerSubscription(subs));
         return new Stream(pipe);
     }
 }
