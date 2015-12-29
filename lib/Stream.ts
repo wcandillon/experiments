@@ -23,6 +23,18 @@ export default class Stream<T> {
         return new Stream<T>(pipe);
     }
 
+    map(cb): Stream<T> {
+        let pipe = new Pipe<T>();
+        this.input.subscribe({
+            next: (item) => {
+                pipe.next(cb(item));
+            },
+            throw: error => pipe.throw(error),
+            return: () => pipe.return()
+        });
+        return new Stream<T>(pipe);
+    }
+
     take(n: number): Stream<T> {
         let i = 0;
         let pipe = new Pipe<T>();
