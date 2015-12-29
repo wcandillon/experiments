@@ -9,8 +9,12 @@ export default class Pipe<T> implements Observable<T>, Observer<T> {
 
     constructor() {}
 
+    setSubscription(subscription: Subscription): Pipe<T> {
+        this.subscription = subscription;
+        return this;
+    }
+
     subscribe(observer: Observer<T>): Subscription {
-        this.subscription = new Subscription();
         this.observer = observer;
         return this.subscription;
     }
