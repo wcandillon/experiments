@@ -45,6 +45,21 @@ describe("Basic Tests", () => {
             });
     });
 
+    it("combine 3", done => {
+        let results = [];
+        let left = new Stream<number>(new AsyncSequence(allTheIntegers));
+        let right = new Stream<number>(new AsyncSequence(allTheIntegers));
+        let add = (left, right) => left + right;
+        Stream
+            .combine(add, [left, right])
+            .take(5)
+            .forEach(result => results.push(result))
+            .return(() => {
+                expect(results).toEqual([2, 4, 6, 8, 10]);
+                done();
+            });
+    });
+
 /*
     it("combine 2", done => {
         let results = [];
