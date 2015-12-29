@@ -53,18 +53,18 @@ describe("Async Sequences", () => {
         });
     });
 
-    it("take(1)", done => {
+    it("take(4)", done => {
         let it = new Stream<number>(new AsyncSequence(allTheIntegers));
         let items = [];
         it
-            .take(1)
+            .take(4)
             .subscribe({
                 next: item => {
                     items.push(item);
                 },
                 throw: error => {},
                 return: () => {
-                    expect(items).toEqual([1]);
+                    expect(items).toEqual([1, 2, 3, 4]);
                     done();
                 }
             });

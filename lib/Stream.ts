@@ -134,15 +134,15 @@ export default class Stream<T> {
                 if(argsAreReady(args)) {
                     pipe.next(fn.apply(fn, getArgs(args)));
                 }
+                if(done === fnArgs.length) {
+                    pipe.return();
+                }
             })
             .subscribe({
                 next: item => {},
                 throw: error => pipe.throw(error),
                 return: () => {
                     done++;
-                    if(done === fnArgs.length) {
-                        pipe.return();
-                    }
                 }
             });
             subs.push(sub);
