@@ -3,18 +3,26 @@ import Seq from "../lib/inputs/AsyncSequence";
 import AsyncSequence from "../lib/inputs/AsyncSequence";
 import Stream from "../lib/Stream";
 
-describe("Basic Tests", () => {
+describe("Async Sequences", () => {
+
+    let delayPromise = function(ms, value) {
+        return new Promise(resolve => setTimeout(() => resolve(value), ms));
+    };
+
+    let allTheIntegers = function*() {
+        let i = 0;
+        while(true) {
+            yield delayPromise(25, ++i);
+        }
+    };
 
     it("async seq", done => {
-        let delayPromise = function(ms, value) {
-            return new Promise(resolve => setTimeout(() => resolve(value), ms));
-        };
-        let allTheIntegers = function*() {
+        let fiveIntegers = function*() {
             for(let i=1; i<=5; i++) {
                 yield delayPromise(25, i);
             }
         };
-        let it = new Stream<number>(new AsyncSequence(allTheIntegers));
+        let it = new Stream<number>(new AsyncSequence(fiveIntegers));
         let items = [];
         it.subscribe({
             next: item => {
@@ -33,36 +41,36 @@ describe("Basic Tests", () => {
     });
 
     it("take(5)", done => {
-        let delayPromise = function(ms, value) {
-            return new Promise(resolve => setTimeout(() => resolve(value), ms));
-        };
-        let allTheIntegers = function*() {
-            let i = 0;
-            while(true) {
-                yield delayPromise(25, ++i);
-            }
-        };
         let it = new Stream<number>(new AsyncSequence(allTheIntegers));
         let items = [];
-        it.take(5).forEach(item => {
+        it.forEach(item => {
             items.push(item);
-        }).return(() => {
+        })
+        .take(5)
+        .return(() => {
             expect(items).toEqual([1, 2, 3, 4, 5]);
             done();
         });
     });
 
+    it("take(4)", done => {
+        let it = new Stream<number>(new AsyncSequence(allTheIntegers));
+        let items = [];
+        it
+            .take(4)
+            .subscribe({
+                next: item => {
+                    items.push(item);
+                },
+                throw: error => {},
+                return: () => {
+                    expect(items).toEqual([1, 2, 3, 4]);
+                    done();
+                }
+            });
+    });
 
-    it("take(5, 2)", done => {
-        let delayPromise = function(ms, value) {
-            return new Promise(resolve => setTimeout(() => resolve(value), ms));
-        };
-        let allTheIntegers = function*() {
-            let i = 0;
-            while(true) {
-                yield delayPromise(25, ++i);
-            }
-        };
+    it("take(5), take(2)", done => {
         let it = new Stream<number>(new AsyncSequence(allTheIntegers));
         let items = [];
         it
@@ -77,15 +85,6 @@ describe("Basic Tests", () => {
     });
 
     it("filter(i > 2)", done => {
-        let delayPromise = function(ms, value) {
-            return new Promise(resolve => setTimeout(() => resolve(value), ms));
-        };
-        let allTheIntegers = function*() {
-            let i = 0;
-            while(true) {
-                yield delayPromise(25, ++i);
-            }
-        };
         let it = new Stream<number>(new AsyncSequence(allTheIntegers));
         let items = [];
         it.take(5).filter(item => {
@@ -99,15 +98,6 @@ describe("Basic Tests", () => {
     });
 
     it("map(i * i)", done => {
-        let delayPromise = function(ms, value) {
-            return new Promise(resolve => setTimeout(() => resolve(value), ms));
-        };
-        let allTheIntegers = function*() {
-            let i = 0;
-            while(true) {
-                yield delayPromise(25, ++i);
-            }
-        };
         let it = new Stream<number>(new AsyncSequence(allTheIntegers));
         let items = [];
         it
@@ -123,15 +113,6 @@ describe("Basic Tests", () => {
     });
 
     it("map(i * i)", done => {
-        let delayPromise = function(ms, value) {
-            return new Promise(resolve => setTimeout(() => resolve(value), ms));
-        };
-        let allTheIntegers = function*() {
-            let i = 0;
-            while(true) {
-                yield delayPromise(25, ++i);
-            }
-        };
         let it = new Stream<number>(new AsyncSequence(allTheIntegers));
         let items = [];
         it

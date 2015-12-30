@@ -1,6 +1,8 @@
 import {Observable} from "./Observable";
 import Pipe from "./inputs/Pipe";
 import {Observer} from "./Observer";
+import Subscription from "./Subscription";
+import MultiplexerSubscription from "./MultiplexerSubscription";
 
 export default class Stream<T> {
 
@@ -60,10 +62,12 @@ export default class Stream<T> {
         let sub = this.input.subscribe({
             next: item => {
                 i++;
-                if(i > n) {
-                    sub.unsubscribe();
-                } else {
+                if(i <= n) {
                     pipe.next(item);
+                }
+                if(i === n) {
+                    sub.unsubscribe();
+                    pipe.return();
                 }
             },
             throw: error => pipe.throw(error),
@@ -88,9 +92,8 @@ export default class Stream<T> {
         return new Stream<T>(pipe);
     }
 
-    subscribe(observer: Observer<T>): Stream<T> {
-        this.input.subscribe(observer);
-        return this;
+    subscribe(observer: Observer<T>): Subscription {
+        return this.input.subscribe(observer);
     }
 
     return(cb): Stream<T> {
@@ -100,5 +103,51 @@ export default class Stream<T> {
             return: cb
         });
         return this;
+    }
+
+    static combine(fn, fnArgs: Stream<any>[]): Stream<any> {
+        let done = 0;
+        let pipe = new Pipe<any>();
+        let args = [];
+        let subs = [];
+        let argsAreReady = args => {
+            let ready = true;
+            args.forEach(arg => {
+                if(arg[0] === undefined) {
+                    ready = false;
+                }
+            });
+            return ready;
+        };
+        let getArgs = args => {
+            let result = [];
+            args.forEach(arg => {
+                result.push(arg.splice(0, 1)[0]);
+            });
+            return result;
+        };
+        for(let i=0; i < fnArgs.length; i++) {
+            args.push([]);
+            let sub = fnArgs[i]
+            .forEach(item => {
+                args[i].push(item);
+                if(argsAreReady(args)) {
+                    pipe.next(fn.apply(fn, getArgs(args)));
+                }
+                if(done === fnArgs.length) {
+                    pipe.return();
+                }
+            })
+            .subscribe({
+                next: item => {},
+                throw: error => pipe.throw(error),
+                return: () => {
+                    done++;
+                }
+            });
+            subs.push(sub);
+        }
+        pipe.setSubscription(new MultiplexerSubscription(subs));
+        return new Stream(pipe);
     }
 }
