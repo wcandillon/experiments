@@ -23,7 +23,19 @@ describe("Sequence Tests", () => {
             }
         });
     });
-    /*
+
+    it("basic 2", done => {
+        let it = new Stream<number>(Sequence.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
+        let items = [];
+        it.forEach(item => {
+                items.push(item);
+            })
+            .return(() => {
+                expect(items).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+                done();
+            });
+    });
+
     it("take(5)", done => {
         let it = new Stream<number>(Sequence.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
         let items = [];
@@ -36,8 +48,7 @@ describe("Sequence Tests", () => {
                 done();
             });
     });
-
-
+/*
     it("take(5, 2)", done => {
         let it = new Stream<number>(Sequence.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
         let items = [];

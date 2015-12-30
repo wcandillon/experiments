@@ -27,7 +27,9 @@ gulp.task('compile:typescript', ['compile:clean'], function() {
 });
 
 gulp.task('test:node', ['compile:typescript'], function () {
-    return gulp.src('dist/tests/*.js').pipe($.jasmine());
+    return gulp.src('dist/tests/*.js').pipe($.jasmine({
+        includeStackTrace: true
+    }));
 });
 
 gulp.task('compile', ['compile:typescript']);

@@ -13,8 +13,10 @@ export default class Sequence<T> implements Observable<T> {
     private pull(observer: Observer<T>, sub: Subscription) {
         let item;
         if((item = this.input.next().value) !== undefined && sub.isOpen()) {
-            observer.next(item);
-            this.pull(observer, sub);
+            Promise.resolve(item).then(item => {
+                observer.next(item);
+                this.pull(observer, sub);
+            });
         } else {
             observer.return();
         }
