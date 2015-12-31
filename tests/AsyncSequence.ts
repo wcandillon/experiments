@@ -133,11 +133,11 @@ describe("Async Sequences", () => {
         let items = [];
         outer
             .loop(() => {
-                return new Stream<number>(new AsyncSequence(allTheIntegers)).take(2);
+                return new Stream<number>(new AsyncSequence(allTheIntegers)).take(3);
             })
             .forEach(item => items.push(item))
             .return(() => {
-                expect(items).toEqual([1, 2, 1, 2]);
+                expect(items).toEqual([1, 2, 3, 1, 2, 3]);
                 done();
             });
     });
