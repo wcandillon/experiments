@@ -26,6 +26,28 @@ export default class Stream<T> {
         return new Stream<T>(pipe);
     }
 
+    loop(stream): Stream<T> {
+        let pipe = new Pipe<T>();
+        let promise = Promise.resolve({});
+        let sub = this.input.subscribe({
+            next: () => {
+                promise = promise.then(() => {
+                    return new Promise((resolve, reject) => {
+                        stream().forEach(item => pipe.next(item)).return(resolve);
+                    });
+                });
+            },
+            throw: error => pipe.throw(error),
+            return: () => {
+                promise.then(() => {
+                    pipe.return();
+                })
+            }
+        });
+        pipe.setSubscription(sub);
+        return new Stream<T>(pipe);
+    }
+
     map(cb): Stream<T> {
         let pipe = new Pipe<T>();
         let sub = this.input.subscribe({
