@@ -1,5 +1,5 @@
 {
-  "name": "observable",
+  "name": "jsoniq-runtime",
   "version": "1.0.0",
   "description": "",
   "main": "gulpfile.js",

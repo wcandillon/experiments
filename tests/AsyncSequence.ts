@@ -127,4 +127,18 @@ describe("Async Sequences", () => {
                 done();
             });
     });
+
+    it("loop", done => {
+        let outer = new Stream<number>(new AsyncSequence(allTheIntegers)).take(2);
+        let items = [];
+        outer
+            .loop(() => {
+                return new Stream<number>(new AsyncSequence(allTheIntegers)).take(3);
+            })
+            .forEach(item => items.push(item))
+            .return(() => {
+                expect(items).toEqual([1, 2, 3, 1, 2, 3]);
+                done();
+            });
+    });
 });
