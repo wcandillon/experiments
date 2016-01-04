@@ -2,6 +2,7 @@
 import Seq from "../lib/inputs/AsyncSequence";
 import AsyncSequence from "../lib/inputs/AsyncSequence";
 import Stream from "../lib/Stream";
+import EmptySequence from "../lib/inputs/EmptySequence";
 
 describe("Async Sequences", () => {
 
@@ -128,7 +129,7 @@ describe("Async Sequences", () => {
             });
     });
 
-    it("loop", done => {
+    it("loop 1", done => {
         let outer = new Stream<number>(new AsyncSequence(allTheIntegers)).take(2);
         let items = [];
         outer
@@ -138,6 +139,20 @@ describe("Async Sequences", () => {
             .forEach(item => items.push(item))
             .return(() => {
                 expect(items).toEqual([1, 2, 3, 1, 2, 3]);
+                done();
+            });
+    });
+
+    it("loop 2", done => {
+        let outer = new Stream(new EmptySequence());
+        let items = [];
+        outer
+            .loop(() => {
+                return new Stream<number>(new AsyncSequence(allTheIntegers)).take(3);
+            })
+            .forEach(item => items.push(item))
+            .return(() => {
+                expect(items).toEqual([]);
                 done();
             });
     });
